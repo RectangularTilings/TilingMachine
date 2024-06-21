@@ -681,18 +681,19 @@ function CanvasClick(event, force){
 			switch(mouseTODO){
 				case "rmOne":
 					currentTiling.lastChange = 0;
-					var brush_t = zone(lastTile, document.getElementById("brushRange").value)
-					for(var k=0; k<brush_t.length; k++){
-						currentTiling.remove(brush_t[k], nbTimes);
-					}
+					//var brush_t = zone(lastTile, document.getElementById("brushRange").value)
+					//for(var k=0; k<brush_t.length; k++){
+					//	currentTiling.removePuzzlePiece(brush_t[k]);
+					//}
+
+					console.log("Removing puzzle piece from tile id " + lastTile);
+					currentTiling.removePuzzlePiece(lastTile);
 					break;
 				
-				case "setOne":
+				case "placeOne":
 					currentTiling.lastChange = 0;
-					var brush_t = zone(lastTile, document.getElementById("brushRange").value)
-					for(var k=0; k<brush_t.length; k++){
-						currentTiling.set(brush_t[k], nbTimes);
-					}
+					console.log("Adding puzzle piece " + selectedPreset + " to tile id " + lastTile)
+					currentTiling.addSelectedPuzzlePiece(lastTile);
 					break;
 
 				case "select":
@@ -708,20 +709,8 @@ function CanvasClick(event, force){
 				default:
 					// What does this do?
 					currentTiling.lastChange = 0;
-
-					// dimensions of the puzzlePiece to create
-					pW = presets[selectedPreset]["width"]
-					pH = presets[selectedPreset]["height"];
-					if (currentTiling.puzzlePieces.length > 0)
-						nextPuzzlePieceId = currentTiling.puzzlePieces.at(-1).id + 1
-					else
-						nextPuzzlePieceId = 0;
-					// create a new PuzzlePiece
-					piece = new PuzzlePiece(nextPuzzlePieceId, pW, pH)
-
-					// place chosen PuzzlePiece at the selected tile.
-					console.log(`Attempting to place piece id ${nextPuzzlePieceId} on tile id ${lastTile}`)
-					currentTiling.placePuzzlePiece(piece, lastTile)
+					console.log("Adding puzzle piece " + selectedPreset + " to tile id " + lastTile)
+					currentTiling.addSelectedPuzzlePiece(lastTile);
 					break;
 			}
 
@@ -766,25 +755,29 @@ function puzzlePieceCreate(){
 	var presetList = document.getElementById("presetList");
 	var width = Number(document.getElementById("pieceWidth").value);
 	var height = Number(document.getElementById("pieceHeight").value);
+	if (width <= 0 || height <= 0)
+			throw Error("Puzzle piece dimensions cannot be non-positive.")
 	presets.push({width, height});
-	const li = document.createElement("LI");
-	// removing oninput="presetSelect(this)" temporary
-	const st = `<li class="presetItem">
-			<input type="radio" class="presetSelect" style="display: none" name="preset" id="preset`+(presets.length-1)+`"  value="`+(presets.length-1)+`"/>
-			<label class="btn btn-default presetSelectButton" for="preset`+(presets.length-1)+`"  style="margin-top:10px;display: inline;width: -webkit-fill-available;" >`+width+` x `+height+`</button>
-				</li>`
-	li.innerHTML= st
-	li.querySelector('#preset'+(presets.length-1)).addEventListener('click', presetSelect)
+	const li = document.createElement("li");
+	li.innerHTML = `<input type="radio" oninput="presetSelect(this)" style="display: none" name="preset" id="presetselector`+presets.length+`" value="`+width+`,`+height+`"/>
+					<label for="presetselector`+presets.length+`" class="preset btn btn-default" style="width: -webkit-fill-available;" value="`+presets.length+`">`
+					 + width + ` ⨉ ` + height +`
+					 </label>`
 	presetList.appendChild(li);
+	li.children[0].checked=true;
+	selectedPreset = presets.length;//this is not right, if we are accessing the information about the preset from the html directly do we even need this?
 } 
-function presetSelect(event) {
-	selectedPreset = event.target.value;
-	console.log(!selectedPreset)
+
+function presetSelect(val) {
+	// nothing to do here
+	return;
+//	console.log(document.querySelector('input[name="preset"]:checked').value);
+//	val.checked = true;
+//	console.log(val.value.split(','));
+//	var presetList = document.getElementById("presetList");
+//	selectedPreset = val.value;
 }
-/*function presetSelect(val){
-	console.log(val.target.htmlFor);
-	var selectedPreset = val.target.htmlFor-1;
-}*/
+
 var holdMouse = false;
 var lastTile = 0;
 var previousTile = -1;
