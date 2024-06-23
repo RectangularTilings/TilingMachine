@@ -657,4 +657,24 @@ class Tiling{
 			console.log(`Attempting to place piece id ${nextPuzzlePieceId} on tile id ${tileid}`)
 			currentTiling.placePuzzlePiece(piece, tileid)
 		}
+
+		matchTiling(location, pattern) 
+		{
+			var check = 1
+			for (var i=location; i<pattern.numCols; i++){
+				for (var j=location; j<pattern.numRows; j++){
+					console.log(i, j) 
+					if (this.tiles[i*this.numRows+j].puzzlePieceBlockId!=pattern.tiles[i*pattern.numRows+j].puzzlePieceBlockId){
+						check= -1;
+						break;
+					}
+					console.log(i, j) 
+				}
+			}
+			if(check===1){
+				return true;
+			} else {
+				return false;
+			}
+		}
 }
