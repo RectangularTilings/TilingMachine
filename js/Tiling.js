@@ -661,10 +661,10 @@ class Tiling{
 		matchTiling(location, pattern) 
 		{
 			var check = 1
-			for (var i=location; i<pattern.numCols; i++){
-				for (var j=location; j<pattern.numRows; j++){
+			for (var i=0; i<pattern.numCols; i++){
+				for (var j=0; j<pattern.numRows; j++){
 					console.log(i, j) 
-					if (this.tiles[i*this.numRows+j].puzzlePieceBlockId!=pattern.tiles[i*pattern.numRows+j].puzzlePieceBlockId){
+					if (this.tiles[location+i*this.numRows+j].puzzlePieceBlockId!=pattern.tiles[i*pattern.numRows+j].puzzlePieceBlockId){
 						check= -1;
 						break;
 					}
