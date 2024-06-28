@@ -658,23 +658,26 @@ class Tiling{
 			currentTiling.placePuzzlePiece(piece, tileid)
 		}
 
-		matchTiling(location, pattern) 
+		duplicateTiling(tileid, referenceTiling)
 		{
-			var check = 1
-			for (var i=0; i<pattern.numCols; i++){
-				for (var j=0; j<pattern.numRows; j++){
-					console.log(i, j) 
-					if (this.tiles[location+i*this.numRows+j].puzzlePieceBlockId!=pattern.tiles[i*pattern.numRows+j].puzzlePieceBlockId){
-						check= -1;
-						break;
+			//ensure the tiling isn't identical to reference before starting
+			for (var i=0; i<referenceTiling.numCols;i++){
+				for (var j=0; j<referenceTiling.numRows; j++){
+					if (this.tiles[tileid+i*this.numRows+j].puzzlePieceBlockId!=-1){
+						continue
 					}
-					console.log(i, j) 
+					//finds the puzzle piece at corresponding tile of reference tiling
+					var toBeCopiedId = referenceTiling.tiles[i*referenceTiling.numRows+j].puzzlePieceId
+					if (toBeCopiedId!==-1){
+						var pieceToBeCopied = referenceTiling.puzzlePieces.find((piece)=> piece.id === toBeCopiedId)
+						// create and places a puzzle piece corresponding to reference
+						var nextPuzzlePieceId = 0;
+						if (currentTiling.puzzlePieces.length > 0)
+							var nextPuzzlePieceId = currentTiling.puzzlePieces.at(-1).id + 1
+						const piece = new PuzzlePiece(nextPuzzlePieceId, pieceToBeCopied.width, pieceToBeCopied.height)
+						this.placePuzzlePiece(piece, tileid+i*this.numRows+j)
+					}
 				}
-			}
-			if(check===1){
-				return true;
-			} else {
-				return false;
 			}
 		}
 }
