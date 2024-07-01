@@ -149,8 +149,8 @@ class Tiling{
 	// ------------------------------------------------
 	constructor(tiles, hide=false, recenter=false){
 		// Temporarily hardcoding these values
-		this.numRows = document.getElementById("cH").value;;
-		this.numCols = document.getElementById("cW").value;;
+		this.numRows = document.getElementById("cH").value;
+		this.numCols = document.getElementById("cW").value;
 
 		this.tiles = tiles;
 		this.puzzlePieces = [];
@@ -602,7 +602,7 @@ class Tiling{
 
 			piece.location = tileid
 			var blocks = piece.Blocks.tiles;
-			if (!color)
+			if (!color && !piece.color)
 				var color = new THREE.Color(Math.random(), Math.random(), Math.random());
 				piece.color = color
 			for (var i=0; i<piece.width; i++){
@@ -611,7 +611,7 @@ class Tiling{
 					tile.puzzlePieceId = piece.id;
 					tile.puzzlePieceBlockId = blocks[i * piece.height + j].id;
 //					var color = new THREE.Color( 90/255, 156/255, 122/255 );
-					this.colorTile(tile.id, color)
+					this.colorTile(tile.id, piece.color)
 				}
 			} 
 			this.puzzlePieces.push(piece)
@@ -658,9 +658,42 @@ class Tiling{
 			currentTiling.placePuzzlePiece(piece, tileid)
 		}
 
+		matchTiling(location, pattern) 
+		{
+			var check = 1
+			for (var i=0; i<pattern.numCols; i++){
+				for (var j=0; j<pattern.numRows; j++){
+					if (pattern.tiles[i*pattern.numRows+j]==-1){
+						continue
+					}
+					if (!this.tiles[location+i*this.numRows+j]){
+						check=-1;
+						break;
+					}
+					if (this.tiles[location+i*this.numRows+j].puzzlePieceBlockId!=pattern.tiles[i*pattern.numRows+j].puzzlePieceBlockId){
+						check= -1;
+						break;
+					}
+				}
+			}
+			if(check===1){
+				return true;
+			} else {
+				return false;
+			}
+		}
+
+
 		duplicateTiling(tileid, referenceTiling)
 		{
 			//ensure the tiling isn't identical to reference before starting
+			for (var i=0; i<referenceTiling.numCols;i++){
+				for (var j=0; j<referenceTiling.numRows; j++){
+					if (this.tiles[tileid+i*this.numRows+j].puzzlePieceBlockId!=-1){
+						this.removePuzzlePiece(tileid+i*this.numRows+j)
+					}
+				}
+			}
 			for (var i=0; i<referenceTiling.numCols;i++){
 				for (var j=0; j<referenceTiling.numRows; j++){
 					if (this.tiles[tileid+i*this.numRows+j].puzzlePieceBlockId!=-1){
@@ -680,4 +713,31 @@ class Tiling{
 				}
 			}
 		}
+
+		placeAllPieces(pieceArray){
+			for (var i = 0; i<pieceArray.length; i++){
+				this.placePuzzlePiece(pieceArray[i])
+			}
+		}
+
+		performMoveHere(location, move){
+			if (this.matchTiling(location, move.configA)){
+				this.duplicateTiling(location, move.configB)
+				return 0;
+			} else if (this.matchTiling(location, move.configB)){
+				this.duplicateTiling(location, move.configA)
+				return 0;
+			} else {
+				return 1;
+			}
+		}
 }
+
+class Move {
+	constructor(configA, configB, originalTiling){
+		this.configA = configA;
+		this.configB = configB;
+		this.originalTiling = originalTiling
+	}
+}
+

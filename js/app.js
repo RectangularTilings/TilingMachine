@@ -181,7 +181,7 @@ function steps(){
 // 	[ 3.2 ] 	Apply multiple steps and color
 //		Tiling.js [ 2.2 ] [ 2.6 ]
 // ------------------------------------------------
-function iterateTiling(){
+/*function iterateTiling(){
 	var is_stable = false;
 	for(var i = 0; i<it_per_frame; i++){
 		is_stable = currentTiling.iterate();
@@ -196,7 +196,9 @@ function iterateTiling(){
 	if(selectedTile)
 		tileInfo.innerHTML = "Tile index : " + selectedTile + "<br>Sand : " + currentTiling.tiles[selectedTile].sand;
 
-}
+}*/
+
+
 
 
 // ------------------------------------------------
@@ -403,11 +405,30 @@ function complexOperationSub(){
 // ------------------------------------------------
 // 	[ 4.1 ] 	Main play function
 // ------------------------------------------------
-async function playWithDelay() {
+/*async function playWithDelay() {
 	if(currentTiling){
 	       while(true){
 		       if(play){
 		               iterateTiling ();
+		       }
+		       await sleep(delay);
+	       }
+	}
+}*/
+
+async function playWithDelay() {
+	if(currentTiling){
+	       while(true){
+		       if(play){
+		               var newLoc =  Math.floor(Math.random()*(currentTiling.numRows*currentTiling.numCols+1))
+					   console.log(newLoc)
+					   match = 1;
+					   var i = 0;
+						while(match===1 && i<moveList.length){
+							match = currentTiling.performMoveHere(newLoc, moveList[i])
+							i++;
+						}
+						increment_number_of_steps()
 		       }
 		       await sleep(delay);
 	       }
@@ -781,3 +802,99 @@ function presetSelect(val) {
 var holdMouse = false;
 var lastTile = 0;
 var previousTile = -1;
+
+// ################################################
+//
+// 	[ 7.0 ]		Dynamics
+//			
+// ################################################
+var originalTiling;
+var tempConfig;
+moveList = []
+function createMove(step){
+	var moveWidth = document.getElementById("mW").value;
+	var moveHeight = document.getElementById("mH").value;
+	var moveStart = document.getElementById('moveStart')
+	var moveNext = document.getElementById('moveNext')
+	var moveFinish = document.getElementById('moveFinish')
+	var params = document.getElementById('moveParams')
+	
+	switch(step){
+		case (1):
+			moveStart.style.display = 'none';
+			params.style.display = 'none';
+			moveNext.style.display = 'block';
+			originalTiling = currentTiling;
+			drawPattern(moveWidth, moveHeight);
+			break;
+		case (2):
+			moveNext.style.display = 'none';
+			moveFinish.style.display = 'block';
+			tempConfig = currentTiling;
+			drawPattern(moveWidth, moveHeight);
+			break;
+		case (3):
+			moveFinish.style.display = 'none';
+			moveStart.style.display = 'block'
+			params.style.display = 'block'
+			var move = new Move(tempConfig, currentTiling, originalTiling)
+			moveList.push(move)
+			drawPattern(originalTiling.numCols, originalTiling.numRows)
+			currentTiling.duplicateTiling(0, originalTiling)
+			break;
+	}
+
+}
+
+function drawPattern(mW, mH){
+	while(app.scene.children.length > 0){
+		app.scene.remove(app.scene.children[0]);
+		console.log("cleared");
+	}
+	
+        // reset global-state-variable
+	check_stable = 0;
+	selectedTile = null;
+	engravingArcs = [];
+	engravingLines = [];
+
+
+
+        // prepare command and call the tiling generator
+	var command = "currentTiling = Tiling.sqTiling({height:mH, width:mW})";
+		console.log(command);
+        console.log("BEGIN construct a new Tiling");
+	eval(command);
+	currentTiling.numRows = mH;
+	currentTiling.numCols = mW;
+        console.log("END construct a new Tiling");
+        console.log("INFO the current Tiling has "+currentTiling.tiles.length+" tiles");
+	
+        // save color map
+	currentTiling.cmap = cmap;
+	
+        // manage camera
+	app.controls.zoomCamera();
+	app.controls.object.updateProjectionMatrix();
+
+        // add tiling and engravings to THREE.js scene
+	app.scene.add(currentTiling.mesh);
+        currentTiling.engravings.forEach( obj => { app.scene.add(obj); } );
+	
+        // apply color map to fill tiles
+	currentTiling.colorTiles();
+	
+        // draw tiles (?)
+	enableWireFrame(document.getElementById("wireFrameToggle"));
+
+        // ?
+	playWithDelay();
+
+        // render THREE.js scene
+	var render = function () {
+		requestAnimationFrame( render );
+		app.controls.update();
+		app.renderer.render( app.scene, app.camera );
+	};
+	render();
+}
