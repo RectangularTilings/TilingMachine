@@ -149,8 +149,8 @@ class Tiling{
 	// ------------------------------------------------
 	constructor(tiles, hide=false, recenter=false){
 		// Temporarily hardcoding these values
-		this.numRows = document.getElementById("cH").value;
-		this.numCols = document.getElementById("cW").value;
+		this.numRows = Number(document.getElementById("cH").value);
+		this.numCols = Number(document.getElementById("cW").value);
 
 		this.tiles = tiles;
 		this.puzzlePieces = [];
@@ -661,18 +661,27 @@ class Tiling{
 		matchTiling(location, pattern) 
 		{
 			var check = 1
-			for (var i=0; i<pattern.numCols; i++){
-				for (var j=0; j<pattern.numRows; j++){
-					if (pattern.tiles[i*pattern.numRows+j]==-1){
-						continue
-					}
-					if (!this.tiles[location+i*this.numRows+j]){
-						check=-1;
-						break;
-					}
-					if (this.tiles[location+i*this.numRows+j].puzzlePieceBlockId!=pattern.tiles[i*pattern.numRows+j].puzzlePieceBlockId){
-						check= -1;
-						break;
+			const cur_row = location % this.numRows;
+			
+			const cur_col = Math.floor(location / this.numRows); 
+                    
+			// to check if the puzzlepiece doesn't break and some part goes to the next row
+			if(cur_col+pattern.numCols >this.numCols|| cur_row +pattern.numRows >this.numRows){
+				check = -1;
+			} else {
+				for (var i=0; i<pattern.numCols; i++){
+					for (var j=0; j<pattern.numRows; j++){
+						if (pattern.tiles[i*pattern.numRows+j]==-1){
+							continue
+						}
+						if (!this.tiles[location+i*this.numRows+j]){
+							check=-1;
+							break;
+						}
+						if (this.tiles[location+i*this.numRows+j].puzzlePieceBlockId!=pattern.tiles[i*pattern.numRows+j].puzzlePieceBlockId){
+							check= -1;
+							break;
+						}
 					}
 				}
 			}

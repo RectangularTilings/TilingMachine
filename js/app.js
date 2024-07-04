@@ -812,8 +812,8 @@ var originalTiling;
 var tempConfig;
 moveList = []
 function createMove(step){
-	var moveWidth = document.getElementById("mW").value;
-	var moveHeight = document.getElementById("mH").value;
+	var moveWidth = Number(document.getElementById("mW").value);
+	var moveHeight = Number(document.getElementById("mH").value);
 	var moveStart = document.getElementById('moveStart')
 	var moveNext = document.getElementById('moveNext')
 	var moveFinish = document.getElementById('moveFinish')
