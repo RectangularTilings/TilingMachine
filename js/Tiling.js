@@ -671,16 +671,24 @@ class Tiling{
 			} else {
 				for (var i=0; i<pattern.numCols; i++){
 					for (var j=0; j<pattern.numRows; j++){
-						if (pattern.tiles[i*pattern.numRows+j]==-1){
-							continue
-						}
 						if (!this.tiles[location+i*this.numRows+j]){
 							check=-1;
 							break;
 						}
+						if (pattern.tiles[i*pattern.numRows+j].puzzlePieceBlockId==-1){
+							continue
+						}
 						if (this.tiles[location+i*this.numRows+j].puzzlePieceBlockId!=pattern.tiles[i*pattern.numRows+j].puzzlePieceBlockId){
 							check= -1;
 							break;
+						} else if (pattern.tiles[i*pattern.numRows+j].puzzlePieceBlockId==0){
+							if (pattern.tiles[i*pattern.numRows+j].puzzlePiece.height!=this.tiles[location+i*this.numRows+j].puzzlePiece.height){
+								check = -1;
+								break;
+							} else if (pattern.tiles[i*pattern.numRows+j].puzzlePiece.width!=this.tiles[location+i*this.numRows+j].puzzlePiece.width) {
+								check = -1;
+								break;
+							}
 						}
 					}
 				}
