@@ -420,13 +420,20 @@ async function playWithDelay() {
 	if(currentTiling){
 	       while(true){
 		       if(play){
-		               var newLoc =  Math.floor(Math.random()*(currentTiling.numRows*currentTiling.numCols+1))
-					   console.log(newLoc)
-					   match = 1;
-					   var i = 0;
-						while(match===1 && i<moveList.length){
-							match = currentTiling.performMoveHere(newLoc, moveList[i])
-							i++;
+						var newLoc =  Math.floor(Math.random()*(currentTiling.numRows*currentTiling.numCols+1)) //picks a random location from the tiling
+						console.log(newLoc)
+						//collecting all possible moves at location
+						possibleMoves = [] 
+						for (var i=0; i<moveList.length; i++){
+							if (currentTiling.matchTiling(newLoc, moveList[i].configA)){
+								possibleMoves.push(moveList[i])
+							} else if (currentTiling.matchTiling(newLoc, moveList[i].configB)){
+								possibleMoves.push(moveList[i])
+							} 
+						}
+						if (possibleMoves.length!=0){
+							var movePick = Math.floor(Math.random()*(possibleMoves.length)) //picking a random move 
+							currentTiling.performMoveHere(newLoc, possibleMoves[movePick])
 						}
 						increment_number_of_steps()
 		       }

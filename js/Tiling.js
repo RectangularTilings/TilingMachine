@@ -739,14 +739,19 @@ class Tiling{
 		}
 
 		performMoveHere(location, move){
-			if (this.matchTiling(location, move.configA)){
-				this.duplicateTiling(location, move.configB)
-				return 0;
-			} else if (this.matchTiling(location, move.configB)){
-				this.duplicateTiling(location, move.configA)
-				return 0;
+			var configPick = Math.floor(Math.random()*2)
+			if (configPick == 0){
+				if (this.matchTiling(location, move.configA)){
+					this.duplicateTiling(location, move.configB)
+				} else if (this.matchTiling(location, move.configB)){
+					this.duplicateTiling(location, move.configA)
+				} 
 			} else {
-				return 1;
+				if (this.matchTiling(location, move.configB)){
+					this.duplicateTiling(location, move.configA)
+				} else if (this.matchTiling(location, move.configA)){
+					this.duplicateTiling(location, move.configB)
+				} 
 			}
 		}
 }
