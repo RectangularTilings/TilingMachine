@@ -424,10 +424,10 @@ async function playWithDelay() {
 						console.log(newLoc)
 						//collecting all possible moves at location
 						possibleMoves = [] 
-						for (var i=0; i<moveList.length; i++){
-							if (currentTiling.matchTiling(newLoc, moveList[i].configA)){
+						for (var i=0; i<activeMoves.length; i++){
+							if (currentTiling.matchTiling(newLoc, activeMoves[i].configA)){
 								possibleMoves.push(moveList[i])
-							} else if (currentTiling.matchTiling(newLoc, moveList[i].configB)){
+							} else if (currentTiling.matchTiling(newLoc, activeMoves[i].configB)){
 								possibleMoves.push(moveList[i])
 							} 
 						}
@@ -805,7 +805,17 @@ function presetSelect(val) {
 //	var presetList = document.getElementById("presetList");
 //	selectedPreset = val.value;
 }
+var activeMoves = []
+function moveSelect(val){
 
+	if (val.checked==false){
+		activeMoves = activeMoves.filter((move)=>{
+			return move!=moveList[val.value-1]
+		})
+	} else {
+		activeMoves.push(moveList[val.value-1])
+	}
+}
 var holdMouse = false;
 var lastTile = 0;
 var previousTile = -1;
@@ -848,8 +858,20 @@ function createMove(step){
 			moveList.push(move)
 			drawPattern(originalTiling.numCols, originalTiling.numRows)
 			currentTiling.duplicateTiling(0, originalTiling)
+			//adding the move to the frontend
+			moves = document.getElementById("moveList");
+			const li = document.createElement("li");
+			li.innerHTML = `<input type="checkbox" oninput="moveSelect(this)" name="move" id="moveSelector`+moveList.length+`" value="`+moveList.length+`"/>
+					<label for="moveSelector`+ moveList.length +`"value="`+moveList.length+`">`
+					 +`Move `+ moveList.length+`
+					 </label>`
+			moves.appendChild(li);
+			li.children[0].checked=true;
+			moveSelect(li.children[0])
 			break;
 	}
+
+	
 
 }
 
