@@ -851,6 +851,7 @@ function createMove(step){
 			drawPattern(moveWidth, moveHeight);
 			break;
 		case (3):
+			if (currentTiling.ensureSameTilesOccupied(tempConfig)) {
 			moveFinish.style.display = 'none';
 			moveStart.style.display = 'block'
 			params.style.display = 'block'
@@ -867,7 +868,10 @@ function createMove(step){
 					 </label>`
 			moves.appendChild(li);
 			li.children[0].checked=true;
-			moveSelect(li.children[0])
+			moveSelect(li.children[0])} else {
+				console.error("Puzzle pieces must occupy the same tiles in both configurations.")
+			}
+
 			break;
 	}
 

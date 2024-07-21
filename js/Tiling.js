@@ -754,6 +754,20 @@ class Tiling{
 				} 
 			}
 		}
+		
+		ensureSameTilesOccupied(configA){
+			for (var i=0; i<this.numCols;i++){
+				for (var j=0; j<this.numRows; j++){
+					if (configA.tiles[i*this.numRows+j].puzzlePieceBlockId!=-1&this.tiles[i*this.numRows+j].puzzlePieceBlockId==-1){
+						return false
+					} else if (configA.tiles[i*this.numRows+j].puzzlePieceBlockId==-1&this.tiles[i*this.numRows+j].puzzlePieceBlockId!=-1){
+						return false
+					}
+
+				}
+			}
+			return true
+		}
 }
 
 class Move {
