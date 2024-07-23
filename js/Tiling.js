@@ -720,7 +720,7 @@ class Tiling{
 					//finds the puzzle piece at corresponding tile of reference tiling
 					var toBeCopiedId = referenceTiling.tiles[i*referenceTiling.numRows+j].puzzlePieceId
 					if (toBeCopiedId!==-1){
-						var pieceToBeCopied = referenceTiling.puzzlePieces.find((piece)=> piece.id === toBeCopiedId)
+						var pieceToBeCopied = referenceTiling.tiles[i*referenceTiling.numRows+j].puzzlePiece
 						// create and places a puzzle piece corresponding to reference
 						var nextPuzzlePieceId = 0;
 						if (currentTiling.puzzlePieces.length > 0)
