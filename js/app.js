@@ -816,6 +816,14 @@ function moveSelect(val){
 		activeMoves.push(moveList[val.value-1])
 	}
 }
+editMode=false
+function editMove(val){
+	console.log(val)
+	document.getElementById("mW").value = moveList[val-1].configA.numCols;
+	document.getElementById("mH").value = moveList[val-1].configB.numRows;
+	editMode=val
+	createMove(1);
+}
 var holdMouse = false;
 var lastTile = 0;
 var previousTile = -1;
@@ -843,32 +851,44 @@ function createMove(step){
 			moveNext.style.display = 'block';
 			originalTiling = currentTiling;
 			drawPattern(moveWidth, moveHeight);
+			if (editMode){
+				currentTiling.duplicateTiling(0, moveList[editMode-1].configA)
+			}
 			break;
 		case (2):
 			moveNext.style.display = 'none';
 			moveFinish.style.display = 'block';
 			tempConfig = currentTiling;
 			drawPattern(moveWidth, moveHeight);
+			if (editMode){
+				currentTiling.duplicateTiling(0, moveList[editMode-1].configB)
+			}
 			break;
 		case (3):
 			if (currentTiling.ensureSameTilesOccupied(tempConfig)) {
 			moveFinish.style.display = 'none';
 			moveStart.style.display = 'block'
 			params.style.display = 'block'
-			var move = new Move(tempConfig, currentTiling, originalTiling)
-			moveList.push(move)
+			if (!editMode){
+				var move = new Move(tempConfig, currentTiling, originalTiling)
+				moveList.push(move)
+				//adding the move to the frontend
+				moves = document.getElementById("moveList");
+				const li = document.createElement("li");
+				li.innerHTML = `<input type="checkbox" oninput="moveSelect(this)" name="move" id="moveSelector`+moveList.length+`" value="`+moveList.length+`"/>
+						<label for="moveSelector`+ moveList.length +`"value="`+moveList.length+`">`
+						+`Move `+ moveList.length+`
+						</label> <span style="margin-left: 24px" onClick="editMove(`+ moveList.length+`)">Edit/View</span>`
+				moves.appendChild(li);
+				li.children[0].checked=true;
+				moveSelect(li.children[0])
+			} else {
+				var move = new Move(tempConfig, currentTiling, originalTiling)
+				moveList[editMode-1] = move
+			}
 			drawPattern(originalTiling.numCols, originalTiling.numRows)
 			currentTiling.duplicateTiling(0, originalTiling)
-			//adding the move to the frontend
-			moves = document.getElementById("moveList");
-			const li = document.createElement("li");
-			li.innerHTML = `<input type="checkbox" oninput="moveSelect(this)" name="move" id="moveSelector`+moveList.length+`" value="`+moveList.length+`"/>
-					<label for="moveSelector`+ moveList.length +`"value="`+moveList.length+`">`
-					 +`Move `+ moveList.length+`
-					 </label>`
-			moves.appendChild(li);
-			li.children[0].checked=true;
-			moveSelect(li.children[0])} else {
+			} else {
 				console.error("Puzzle pieces must occupy the same tiles in both configurations.")
 			}
 
