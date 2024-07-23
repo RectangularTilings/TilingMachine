@@ -608,6 +608,7 @@ class Tiling{
 			for (var i=0; i<piece.width; i++){
 				for (var j=0; j<piece.height; j++){
 					const tile = this.tiles[tileid + i*this.numRows +  j]
+					tile.puzzlePiece = piece;
 					tile.puzzlePieceId = piece.id;
 					tile.puzzlePieceBlockId = blocks[i * piece.height + j].id;
 //					var color = new THREE.Color( 90/255, 156/255, 122/255 );
