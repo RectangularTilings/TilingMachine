@@ -608,7 +608,6 @@ class Tiling{
 			for (var i=0; i<piece.width; i++){
 				for (var j=0; j<piece.height; j++){
 					const tile = this.tiles[tileid + i*this.numRows +  j]
-					tile.puzzlePiece = piece;
 					tile.puzzlePieceId = piece.id;
 					tile.puzzlePieceBlockId = blocks[i * piece.height + j].id;
 //					var color = new THREE.Color( 90/255, 156/255, 122/255 );
@@ -624,7 +623,7 @@ class Tiling{
 			var toBeRemovedId = this.tiles[tileid].puzzlePieceId
 			if (toBeRemovedId===-1)
 				throw Error("No puzzle piece at location")
-			var pieceToBeRemoved = this.tiles[tileid].puzzlePiece;
+			var pieceToBeRemoved = this.puzzlePieces.find((piece)=> piece.id === toBeRemovedId);
 			var originTile = pieceToBeRemoved.location;
 			var color = new THREE.Color(1, 1, 1);
 			for (var i=0; i<pieceToBeRemoved.width; i++){
