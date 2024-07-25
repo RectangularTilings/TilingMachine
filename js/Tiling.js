@@ -528,7 +528,7 @@ class Tiling{
 			//console.log(`Now printing direction:`, direction);
 
 		
-		    // Extend the current and next vertices slightly
+		    // Extending the current and next vertices slightly
 		    var extendLength = 0.09; // Adjust the extension length as needed
 		    var extendedCurrentVertex = currentVertex.clone().sub(direction.clone().multiplyScalar(extendLength));
 			//console.log(`Now printing extended currentVertex:`, extendedCurrentVertex);
@@ -544,8 +544,8 @@ class Tiling{
 		    // Create the tube geometry for thick lines
 		    var tubeGeometry = new THREE.TubeGeometry(
 		        new THREE.CatmullRomCurve3(linePoints),
-		        64,     // Path segments (lowered for performance)
-		        0.1,    // Thickness (adjusted)
+		        64,     // Path segments 
+		        0.1,    // Thickness 
 		        8,      // Roundness of tube
 		        false   // Closed
 		    );
@@ -553,7 +553,7 @@ class Tiling{
 		    // Line material with dark blue color
 		    var lineMaterial = new THREE.MeshBasicMaterial({ color: 0x00008B });
 		
-		    // Create the line mesh and add it to the mesh
+		    // Creating the line mesh and adding it to the mesh
 		    let lineMesh = new THREE.Mesh(tubeGeometry, lineMaterial);
 		    this.mesh.add(lineMesh);
 		}
