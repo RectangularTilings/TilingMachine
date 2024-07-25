@@ -232,13 +232,13 @@ class Tiling{
 			var wirePosition = new THREE.Float32BufferAttribute( wireFrame, 3 );
 			wireFrameGeometry.addAttribute( 'position', wirePosition );
 			
-			var mat = new THREE.LineBasicMaterial( { color: 0x000000, linewidth: 1 } );
+			var mat = new THREE.LineBasicMaterial( { color: 0xFFFF00, linewidth: 0 } );
 			this.wireFrame = new THREE.LineSegments( wireFrameGeometry, mat );
 			
 			// Engravings -----------------------------------------------------
 
                         this.engravings = [];
-                        let engravingArcsMaterial = new THREE.LineBasicMaterial({color:0xff0000,linewidth:1});
+                        let engravingArcsMaterial = new THREE.LineBasicMaterial({color:0xFFFF00,linewidth:0});
                         engravingArcs.forEach(eA => {
                           let x=eA[0];
                           let y=eA[1];
@@ -481,6 +481,88 @@ class Tiling{
 		tile.svg_color = color.getHexString();
 		this.mesh.geometry.attributes.color.needsUpdate = true;
 	}
+	custom_colorTile(id, color){
+		// Colors only one tile according to this.cmap
+		var tile = this.tiles[id];
+		console.log("printing tile:",tile);
+		var colorNum = tile.sand;
+		if(colorNum >= this.cmap.length){
+			colorNum = this.cmap.length-1;
+		}
+		
+		if(!color){
+			if(colorNum >= 0){
+				color = this.cmap[colorNum];
+			} else{
+				// default
+				
+				if(tile.sand >= tile.limit){
+					// ready to topple - flashy colors
+					var flashy = ["#ff1a1a", "#ff751a", "#ffbb33", "#ffff4d", "#99ff66", "#44ff11", "#22ffaa", "#00ffff", "#0077ff",  "#0000ff"];
+					var flashyIndex = Math.min(tile.sand-tile.limit, flashy.length-1);
+					color = new THREE.Color(flashy[flashyIndex]);
+				} else {
+					// stable, grey
+					var greyScale = 1.0 - tile.sand / tile.limit;
+					color = new THREE.Color( greyScale, greyScale, greyScale );
+					
+				}
+			}
+		}
+		console.log("printing tile.points:",tile.points);
+		for (var k in tile.points) {
+		    var point = tile.points[k];
+			console.log(point);
+		    var nextPoint = tile.points[(parseInt(k) + 1) % tile.points.length];
+		
+		    // Get the current and next vertex from the geometry
+		    var currentVertex = new THREE.Vector3().fromBufferAttribute(this.mesh.geometry.attributes.position, point);
+			//console.log(`Now printing currentVertex:`, currentVertex);
+
+		    var nextVertex = new THREE.Vector3().fromBufferAttribute(this.mesh.geometry.attributes.position, nextPoint);
+			//console.log(`Now printing nextVertex:`, nextVertex);
+
+		
+		    // Calculate the direction vector from the current vertex to the next
+		    var direction = new THREE.Vector3().subVectors(nextVertex, currentVertex).normalize();
+			//console.log(`Now printing direction:`, direction);
+
+		
+		    // Extending the current and next vertices slightly
+		    var extendLength = 0.09; // Adjust the extension length as needed
+		    var extendedCurrentVertex = currentVertex.clone().sub(direction.clone().multiplyScalar(extendLength));
+			//console.log(`Now printing extended currentVertex:`, extendedCurrentVertex);
+
+		    var extendedNextVertex = nextVertex.clone().add(direction.clone().multiplyScalar(extendLength));
+			//console.log(`Now printing extended nextVertex:`, extendedNextVertex);
+		
+		    // Create the points for the tube geometry
+		    let linePoints = [extendedCurrentVertex, extendedNextVertex];
+		    //console.log(`Now printing linepoints which includes extended current and next vertex`, linePoints);
+
+		
+		    // Create the tube geometry for thick lines
+		    var tubeGeometry = new THREE.TubeGeometry(
+		        new THREE.CatmullRomCurve3(linePoints),
+		        64,     // Path segments 
+		        0.1,    // Thickness 
+		        8,      // Roundness of tube
+		        false   // Closed
+		    );
+		
+		    // Line material with dark blue color
+		    var lineMaterial = new THREE.MeshBasicMaterial({ color: 0x00008B });
+		
+		    // Creating the line mesh and adding it to the mesh
+		    let lineMesh = new THREE.Mesh(tubeGeometry, lineMaterial);
+		    this.mesh.add(lineMesh);
+		}
+		
+		tile.svg_color = '00008B';
+
+		
+		
+	}
 
 	colorTiles(){
 		// Colors every tile
@@ -611,7 +693,9 @@ class Tiling{
 					tile.puzzlePieceId = piece.id;
 					tile.puzzlePieceBlockId = blocks[i * piece.height + j].id;
 //					var color = new THREE.Color( 90/255, 156/255, 122/255 );
-					this.colorTile(tile.id, color)
+					console.log("inside placePuzzlePiece function 1st value is blockid and second is tildid:",tile.puzzlePieceBlockId,tile.id);
+					console.log("printing tile.bounds",tile.bounds);
+					this.custom_colorTile(tile.id, color)
 				}
 			} 
 			this.puzzlePieces.push(piece)
