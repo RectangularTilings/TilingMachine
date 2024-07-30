@@ -885,6 +885,7 @@ function createMove(step){
 			} else {
 				var move = new Move(tempConfig, currentTiling, originalTiling)
 				moveList[editMode-1] = move
+				editMode=false
 			}
 			drawPattern(originalTiling.numCols, originalTiling.numRows)
 			currentTiling.duplicateTiling(0, originalTiling)
