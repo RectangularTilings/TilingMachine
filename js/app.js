@@ -821,6 +821,7 @@ function editMove(val){
 	console.log(val)
 	document.getElementById("mW").value = moveList[val-1].configA.numCols;
 	document.getElementById("mH").value = moveList[val-1].configB.numRows;
+	originalTiling=editMode?originalTiling:currentTiling
 	editMode=val
 	createMove(1);
 }
