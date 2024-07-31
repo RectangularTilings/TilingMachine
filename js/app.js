@@ -849,7 +849,7 @@ function createMove(step){
 			moveStart.style.display = 'none';
 			params.style.display = 'none';
 			moveNext.style.display = 'block';
-			originalTiling = currentTiling;
+			originalTiling = editMode?originalTiling:currentTiling;
 			drawPattern(moveWidth, moveHeight);
 			if (editMode){
 				currentTiling.duplicateTiling(0, moveList[editMode-1].configA)
